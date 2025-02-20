@@ -23,8 +23,12 @@ const Home = () => {
   };
 
   const handleSearch = () => {
+    if (!location || !propertyType) {
+      alert('Please select both location and property type.');
+      return;
+    }
     console.log('Searching with:', { location, priceRange, propertyType });
-    navigate('/properties/2');
+    navigate(`/properties?location=${location}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&type=${propertyType}`);
   };
 
 

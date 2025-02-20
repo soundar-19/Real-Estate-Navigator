@@ -9,7 +9,6 @@ const api = axios.create({
   baseURL: 'http://localhost:5000/api'
 });
 
-
 const Properties = () => {
     const [properties, setProperties] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,8 +21,9 @@ const Properties = () => {
     useEffect(() => {
         const fetchProperties = async () => {
             try {
-                const response = await api.get('/properties');
-
+                const response = await api.get('/properties', {
+                    params: { type }
+                });
                 setProperties(response.data);
             } catch (err) {
                 setError(err.response?.data?.error || 'Failed to fetch properties');
@@ -33,7 +33,7 @@ const Properties = () => {
         };
 
         fetchProperties();
-    }, []);
+    }, [type]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen">Loading properties...</div>;

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 const PropertyDetails = () => {
     const [searchParams] = useSearchParams();
-    const propertyType = searchParams.get('type');
+    const propertyType = searchParams.get('type')?.toLowerCase();
 
     // Sample property types data
     const propertyTypes = {
@@ -40,7 +40,6 @@ const PropertyDetails = () => {
         icon: '❓'
     };
 
-
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="text-center">
@@ -54,7 +53,6 @@ const PropertyDetails = () => {
             </div>
         </div>
     );
-
 };
 
 export default PropertyDetails;

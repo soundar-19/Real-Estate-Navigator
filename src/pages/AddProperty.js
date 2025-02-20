@@ -42,7 +42,7 @@ const AddProperty = () => {
             const formDataToSend = new FormData();
             Object.keys(formData).forEach(key => {
                 if (key === 'images') {
-                    formData.images.forEach((file, index) => {
+                    formData[key].forEach((file) => {
                         formDataToSend.append('images', file);
                     });
                 } else {

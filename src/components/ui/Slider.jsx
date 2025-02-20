@@ -2,7 +2,8 @@ import React from 'react';
 
 const Slider = ({ value, onChange, min = 0, max = 100, step = 1, className = '' }) => {
   const handleChange = (e) => {
-    onChange([Number(e.target.value)]);
+    const newValue = Number(e.target.value);
+    onChange([newValue, value[1]]);
   };
 
   return (

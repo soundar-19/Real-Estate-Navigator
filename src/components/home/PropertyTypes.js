@@ -64,11 +64,10 @@ const PropertyTypes = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-                <Link
+              <Link
                 to={`/property-details?type=${type.title.toLowerCase()}`}
                 className="block group"
               >
-
                 <div className={`bg-white rounded-xl shadow-lg p-6 transition-transform duration-300 hover:scale-105`}>
                   <div className={`${type.color} w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto`}>
                     <type.icon className="w-8 h-8 text-white" />
