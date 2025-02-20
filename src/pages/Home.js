@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 import { Search, Home as HomeIcon, MapPin, Phone, IndianRupee } from 'lucide-react';
 
 import Slider from '../components/ui/Slider';
-import { Select, SelectContent, SelectItem } from '../components/ui/Select';
+import { Select, SelectContent, SelectItem } from '../components/ui/Select.jsx';
+
 
 const Home = () => {
+  const navigate = useNavigate();
   const [location, setLocation] = useState('');
+
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [propertyType, setPropertyType] = useState('');
 
@@ -20,7 +24,9 @@ const Home = () => {
 
   const handleSearch = () => {
     console.log('Searching with:', { location, priceRange, propertyType });
+    navigate('/properties/2');
   };
+
 
   const featuredProperties = [
     { 

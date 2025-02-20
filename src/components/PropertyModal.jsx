@@ -50,7 +50,15 @@ const PropertyModal = ({ property, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
+      <div 
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm" 
+        onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        tabIndex={0}
+        role="button"
+        aria-label="Close modal"
+      ></div>
+
 
       {/* Modal */}
       <div className="relative min-h-screen flex items-center justify-center p-4">
@@ -73,12 +81,19 @@ const PropertyModal = ({ property, onClose }) => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute bottom-4 right-4 flex gap-2">
-                  <button className="bg-white p-2 rounded-lg shadow hover:bg-gray-100">
-                    <Heart className="w-5 h-5 text-red-500" />
-                  </button>
-                  <button className="bg-white p-2 rounded-lg shadow hover:bg-gray-100">
-                    <Share2 className="w-5 h-5 text-blue-500" />
-                  </button>
+                <button 
+                  className="bg-white p-2 rounded-lg shadow hover:bg-gray-100"
+                  aria-label="Add to favorites"
+                >
+                  <Heart className="w-5 h-5 text-red-500" />
+                </button>
+                <button 
+                  className="bg-white p-2 rounded-lg shadow hover:bg-gray-100"
+                  aria-label="Share property"
+                >
+                  <Share2 className="w-5 h-5 text-blue-500" />
+                </button>
+
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -88,7 +103,10 @@ const PropertyModal = ({ property, onClose }) => {
                     onClick={() => setSelectedImage(index)}
                     className={`relative rounded-lg overflow-hidden h-20 
                       ${selectedImage === index ? 'ring-2 ring-blue-500' : 'opacity-70'}`}
+                    aria-label={`Select image ${index + 1}`}
+                    aria-pressed={selectedImage === index}
                   >
+
                     <img src={img} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}

@@ -21,7 +21,6 @@ const Properties = () => {
       baths: 3,
       sqft: '3,500',
       location: 'Adyar, Chennai',
-
       yearBuilt: 2020
     },
     { 
@@ -34,7 +33,6 @@ const Properties = () => {
       baths: 2,
       sqft: '1,200',
       location: 'RS Puram, Coimbatore',
-
       yearBuilt: 2018
     },
     { 
@@ -47,7 +45,6 @@ const Properties = () => {
       baths: 2,
       sqft: '1,800',
       location: 'Ooty Hills',
-
       yearBuilt: 2015
     }
   ];
@@ -61,10 +58,16 @@ const Properties = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map(property => (
-            <div
+            <button
               key={property.id}
               onClick={() => setSelectedProperty(property)}
-              className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow group"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setSelectedProperty(property);
+                }
+              }}
+              className="w-full text-left bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow group"
+              aria-label={`View details of ${property.title}`}
             >
               <div className="relative">
                 <img 
@@ -99,7 +102,7 @@ const Properties = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
