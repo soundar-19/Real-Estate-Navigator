@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.page-padding {
+  padding-top: 4rem;
+}
+
+/* Custom utility classes */
+@layer components {
+  .input-primary {
+    @apply w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors;
+  }
+
+  .section-padding {
+    @apply py-12 px-4;
+  }
+
+  .container-custom {
+    @apply container mx-auto px-4;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
