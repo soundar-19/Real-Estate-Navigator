@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import { 
   MapPin, 
   Phone, 
-
   Calendar, 
   BedDouble, 
   Bath, 
@@ -13,8 +14,6 @@ import {
   Wifi,
   Trees,
   Waves,
-
-
   ChefHat,
   ShowerHead,
   Clock,
@@ -50,14 +49,13 @@ const PropertyModal = ({ property, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm" 
+      <button
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm w-full h-full"
         onClick={onClose}
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
-        tabIndex={0}
-        role="button"
         aria-label="Close modal"
-      ></div>
+      />
+
 
 
       {/* Modal */}
@@ -97,17 +95,19 @@ const PropertyModal = ({ property, onClose }) => {
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {images.map((img, index) => (
+                {images.map((img, idx) => (
                   <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
+                    key={img} // Using image URL as unique key
+                    onClick={() => setSelectedImage(idx)}
                     className={`relative rounded-lg overflow-hidden h-20 
-                      ${selectedImage === index ? 'ring-2 ring-blue-500' : 'opacity-70'}`}
-                    aria-label={`Select image ${index + 1}`}
-                    aria-pressed={selectedImage === index}
+                      ${selectedImage === idx ? 'ring-2 ring-blue-500' : 'opacity-70'}`}
+                    aria-label={`Select image ${idx + 1}`}
+                    aria-pressed={selectedImage === idx}
                   >
 
-                    <img src={img} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
+
+                    <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+
                   </button>
                 ))}
               </div>
@@ -160,8 +160,9 @@ const PropertyModal = ({ property, onClose }) => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Amenities</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center space-x-2 text-gray-700">
+                  {amenities.map((amenity) => (
+                    <div key={amenity.label} className="flex items-center space-x-2 text-gray-700">
+
                       {amenity.icon}
                       <span>{amenity.label}</span>
                     </div>
@@ -202,20 +203,24 @@ const PropertyModal = ({ property, onClose }) => {
                 <h3 className="text-2xl font-bold text-center mb-6">Contact Agent</h3>
                 <form className="space-y-4">
                   <div>
-                    <label className="block text-gray-700 mb-2">Name</label>
-                    <input type="text" className="w-full p-3 border rounded-lg" />
+                    <label htmlFor="name" className="block text-gray-700 mb-2">Name</label>
+                    <input id="name" type="text" className="w-full p-3 border rounded-lg" />
+
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Email</label>
-                    <input type="email" className="w-full p-3 border rounded-lg" />
+                    <label htmlFor="email" className="block text-gray-700 mb-2">Email</label>
+                    <input id="email" type="email" className="w-full p-3 border rounded-lg" />
+
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Phone</label>
-                    <input type="tel" className="w-full p-3 border rounded-lg" />
+                    <label htmlFor="phone" className="block text-gray-700 mb-2">Phone</label>
+                    <input id="phone" type="tel" className="w-full p-3 border rounded-lg" />
+
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Message</label>
-                    <textarea className="w-full p-3 border rounded-lg" rows="4"></textarea>
+                    <label htmlFor="message" className="block text-gray-700 mb-2">Message</label>
+                    <textarea id="message" className="w-full p-3 border rounded-lg" rows="4"></textarea>
+
                   </div>
                   <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg 
                     hover:bg-blue-700 transition-colors"
@@ -230,6 +235,13 @@ const PropertyModal = ({ property, onClose }) => {
       </div>
     </div>
   );
+};
+
+PropertyModal.propTypes = {
+  property: PropTypes.shape({
+    // Define property shape here
+  }),
+  onClose: PropTypes.func.isRequired
 };
 
 export default PropertyModal;
