@@ -58,7 +58,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center text-gray-400">
                 <Mail className="h-5 w-5 mr-2" />
-                contact@realestate.com
+                soundarrajacf@gmail.com
               </li>
               <li className="flex items-center text-gray-400">
                 <MapPin className="h-5 w-5 mr-2" />

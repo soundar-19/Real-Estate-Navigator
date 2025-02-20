@@ -2,8 +2,8 @@ import React from 'react';
 
 const Favorites = () => {
     const favoriteProperties = [
-        { id: 1, title: 'Luxury Villa in California', price: '$1,200,000' },
-        { id: 2, title: 'Modern Apartment in New York', price: '$850,000' },
+        { id: 1, title: 'Luxury Villa in Ooty', price: 'Rs.1,200,000' },
+        { id: 2, title: 'Modern Apartment in Madurai', price: 'Rs.850,000' },
     ];
 
     return (
@@ -24,6 +24,5 @@ const Favorites = () => {
         </div>
     );
 };
-
 
 export default Favorites;

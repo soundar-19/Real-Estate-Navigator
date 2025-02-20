@@ -5,8 +5,7 @@ import { Building, Heart, Menu, X } from 'lucide-react';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-const [notifications] = useState(3);
-
+  const [notifications] = useState(3);
 
   const navItems = [
     { path: '/', label: 'Home' },
