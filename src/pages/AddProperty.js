@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { Home, IndianRupee, FileText, Tags, MapPin, BedDouble, Bath, Maximize, Upload } from 'lucide-react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api'
+});
 
 
 const AddProperty = () => {
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
         price: '',
         description: '',
         features: '',
         location: '',
+        propertyType: '',
         bedrooms: '',
         bathrooms: '',
         area: '',
@@ -23,9 +33,38 @@ const AddProperty = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Property added:', formData);
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const formDataToSend = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'images') {
+                    formData.images.forEach((file, index) => {
+                        formDataToSend.append('images', file);
+                    });
+                } else {
+                    formDataToSend.append(key, formData[key]);
+                }
+            });
+
+            const response = await api.post('/properties', formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            
+            if (response.status === 201) {
+                navigate('/properties');
+            }
+        } catch (err) {
+            setError(err.response?.data?.error || 'Failed to add property');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDrag = (e) => {
@@ -53,11 +92,36 @@ const AddProperty = () => {
 
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
+                        {error && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Basic Information */}
                         <div className="space-y-6">
                             <h2 className="text-2xl font-semibold text-gray-900">Basic Information</h2>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                        <Home className="w-4 h-4 mr-2" />
+                                        Property Type
+                                    </label>
+                                    <select
+                                        name="propertyType"
+                                        value={formData.propertyType}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        <option value="">Select Type</option>
+                                        <option value="Apartment">Apartment</option>
+                                        <option value="House">House</option>
+                                        <option value="Villa">Villa</option>
+                                        <option value="Commercial">Commercial</option>
+                                    </select>
+                                </div>
+
                                 <div>
                                     <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                                         <Home className="w-4 h-4 mr-2" />
@@ -76,7 +140,6 @@ const AddProperty = () => {
                                 <div>
                                     <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                                         <IndianRupee className="w-4 h-4 mr-2" />
-
                                         Price
                                     </label>
                                     <input
@@ -86,7 +149,6 @@ const AddProperty = () => {
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="e.g., ₹45,00,000"
-
                                     />
                                 </div>
 
@@ -102,7 +164,6 @@ const AddProperty = () => {
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="e.g., 123 Gandhi Road, Chennai, Tamil Nadu"
-
                                     />
                                 </div>
                             </div>
@@ -206,10 +267,38 @@ const AddProperty = () => {
                                 <div className="mt-4">
                                     <p className="text-sm text-gray-600">
                                         Drag and drop your images here, or{' '}
-                                        <button type="button" className="text-blue-500 hover:text-blue-600 font-medium">
+                                        <input 
+                                            type="file"
+                                            id="fileInput"
+                                            className="hidden"
+                                            multiple
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files);
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    images: [...prev.images, ...files]
+                                                }));
+                                            }}
+                                        />
+                                        <label 
+                                            htmlFor="fileInput" 
+                                            className="text-blue-500 hover:text-blue-600 font-medium cursor-pointer"
+                                        >
                                             browse
-                                        </button>
+                                        </label>
                                     </p>
+                                    {formData.images.length > 0 && (
+                                        <div className="mt-4">
+                                            <h3 className="text-sm font-medium mb-2">Selected Files:</h3>
+                                            <div className="space-y-1">
+                                                {formData.images.map((file, index) => (
+                                                    <div key={index} className="text-sm text-gray-600">
+                                                        {file.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -217,9 +306,10 @@ const AddProperty = () => {
                         <div className="flex justify-end">
                             <button
                                 type="submit"
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                disabled={isLoading}
                             >
-                                List Property
+                                {isLoading ? 'Listing Property...' : 'List Property'}
                             </button>
                         </div>
                     </form>
