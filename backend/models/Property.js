@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
 const propertySchema = new mongoose.Schema({
+
+
   title: {
     type: String,
     required: true
@@ -37,10 +39,31 @@ const propertySchema = new mongoose.Schema({
   images: [{
     type: String
   }],
+  amenities: [{
+    type: String
+  }],
   createdAt: {
     type: Date,
     default: Date.now
   }
+
 });
+
+// Static method for searching properties
+propertySchema.statics.search = async function(query, filters = {}) {
+  const searchQuery = {
+    $text: { $search: query }
+  };
+  
+  // Combine search with additional filters
+  const finalQuery = Object.assign({}, searchQuery, filters);
+  
+  return this.find(finalQuery)
+    .sort({ score: { $meta: 'textScore' } })
+    .limit(20);
+};
+
+// Create text indexes for search functionality
+propertySchema.index({ title: 'text', description: 'text', location: 'text' });
 
 module.exports = mongoose.model('Property', propertySchema);

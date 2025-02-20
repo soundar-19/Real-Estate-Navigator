@@ -49,4 +49,29 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+// Fetch unique property locations
+const fetchLocations = async () => {
+  try {
+    const response = await api.get('/properties/locations');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Search properties with optional filters
+const searchProperties = async (query, filters = {}) => {
+  try {
+    const response = await api.get('/properties/search', {
+      params: {
+        q: query,
+        ...filters
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { api, fetchLocations, searchProperties };

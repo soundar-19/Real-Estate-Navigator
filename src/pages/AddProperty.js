@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Home, IndianRupee, FileText, Tags, MapPin, BedDouble, Bath, Maximize, Upload } from 'lucide-react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-// Create axios instance with base URL
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api'
-});
+import BasicInformation from '../components/BasicInformation';
+import PropertyDetails from '../components/PropertyDetails';
+import Amenities from '../components/Amenities';
+import AgentInformation from '../components/AgentInformation';
+import { Upload } from 'lucide-react';
+import { api } from '../lib/api';
 
 
 const AddProperty = () => {
@@ -23,6 +22,10 @@ const AddProperty = () => {
         bedrooms: '',
         bathrooms: '',
         area: '',
+        amenities: [],
+        agentName: '',
+        agentPhone: '',
+        agentEmail: '',
         images: []
     });
 
@@ -33,22 +36,46 @@ const AddProperty = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleAmenityChange = (amenityId) => {
+        setFormData(prev => ({
+            ...prev,
+            amenities: prev.amenities.includes(amenityId)
+                ? prev.amenities.filter(id => id !== amenityId)
+                : [...prev.amenities, amenityId]
+        }));
+    };
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setFormData(prev => ({ ...prev, images: files }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
-        
+
         try {
+            // Validate required fields
+            const requiredFields = ['title', 'price', 'location', 'propertyType'];
+            const missingFields = requiredFields.filter(field => !formData[field]);
+            if (missingFields.length > 0) {
+                throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+            }
+
+            // Validate at least one image
+            if (formData.images.length === 0) {
+                throw new Error('At least one image is required');
+            }
+
             const formDataToSend = new FormData();
-            Object.keys(formData).forEach(key => {
+            for (const [key, value] of Object.entries(formData)) {
                 if (key === 'images') {
-                    formData[key].forEach((file) => {
-                        formDataToSend.append('images', file);
-                    });
+                    value.forEach(file => formDataToSend.append('images', file));
                 } else {
-                    formDataToSend.append(key, formData[key]);
+                    formDataToSend.append(key, value);
                 }
-            });
+            }
 
             const response = await api.post('/properties', formDataToSend, {
                 headers: {
@@ -56,12 +83,11 @@ const AddProperty = () => {
                 }
             });
 
-            
-            if (response.status === 201) {
-                navigate('/properties');
-            }
+
+            navigate('/properties');
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to add property');
+            console.error('Submission error:', err);
+            setError(err.message || 'An error occurred while submitting the form');
         } finally {
             setIsLoading(false);
         }
@@ -98,158 +124,10 @@ const AddProperty = () => {
                             </div>
                         )}
 
-                        {/* Basic Information */}
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold text-gray-900">Basic Information</h2>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <Home className="w-4 h-4 mr-2" />
-                                        Property Type
-                                    </label>
-                                    <select
-                                        name="propertyType"
-                                        value={formData.propertyType}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    >
-                                        <option value="">Select Type</option>
-                                        <option value="Apartment">Apartment</option>
-                                        <option value="House">House</option>
-                                        <option value="Villa">Villa</option>
-                                        <option value="Commercial">Commercial</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <Home className="w-4 h-4 mr-2" />
-                                        Property Title
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={formData.title}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., Modern Downtown Apartment"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <IndianRupee className="w-4 h-4 mr-2" />
-                                        Price
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="price"
-                                        value={formData.price}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., ₹45,00,000"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <MapPin className="w-4 h-4 mr-2" />
-                                        Location
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="location"
-                                        value={formData.location}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., 123 Gandhi Road, Chennai, Tamil Nadu"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Property Details */}
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold text-gray-900">Property Details</h2>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <BedDouble className="w-4 h-4 mr-2" />
-                                        Bedrooms
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="bedrooms"
-                                        value={formData.bedrooms}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., 3"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <Bath className="w-4 h-4 mr-2" />
-                                        Bathrooms
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="bathrooms"
-                                        value={formData.bathrooms}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., 2"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                        <Maximize className="w-4 h-4 mr-2" />
-                                        Area (sq ft)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="area"
-                                        value={formData.area}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., 1500"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                    <FileText className="w-4 h-4 mr-2" />
-                                    Description
-                                </label>
-                                <textarea
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    rows={4}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="Describe your property..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                                    <Tags className="w-4 h-4 mr-2" />
-                                    Features
-                                </label>
-                                <input
-                                    type="text"
-                                    name="features"
-                                    value={formData.features}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="e.g., Pool, Garden, Garage (comma separated)"
-                                />
-                            </div>
-                        </div>
+                        <BasicInformation formData={formData} handleChange={handleChange} />
+                        <PropertyDetails formData={formData} handleChange={handleChange} />
+                        <Amenities formData={formData} handleAmenityChange={handleAmenityChange} />
+                        <AgentInformation formData={formData} handleChange={handleChange} />
 
                         {/* Image Upload */}
                         <div className="space-y-6">
@@ -272,13 +150,7 @@ const AddProperty = () => {
                                             id="fileInput"
                                             className="hidden"
                                             multiple
-                                            onChange={(e) => {
-                                                const files = Array.from(e.target.files);
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    images: [...prev.images, ...files]
-                                                }));
-                                            }}
+                                            onChange={handleFileChange}
                                         />
                                         <label 
                                             htmlFor="fileInput" 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
 
 
@@ -22,11 +23,18 @@ SelectContent.propTypes = {
 
 const Select = ({ value, onValueChange, children, label }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(value || '');
 
   const handleSelect = (newValue) => {
+    setSelectedValue(newValue);
     onValueChange(newValue);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    setSelectedValue(value || '');
+  }, [value]);
+
 
   return (
     <div className="relative">
@@ -45,7 +53,8 @@ const Select = ({ value, onValueChange, children, label }) => {
         tabIndex={0}
         aria-labelledby="select-label"
       >
-        {value || 'Select'}
+        {selectedValue || 'Select'}
+
       </button>
 
       {isOpen && (
@@ -53,7 +62,8 @@ const Select = ({ value, onValueChange, children, label }) => {
           {React.Children.map(children, (child) =>
             React.cloneElement(child, {
               onClick: () => handleSelect(child.props.value),
-              selected: value === child.props.value
+              selected: selectedValue === child.props.value
+
             })
           )}
         </SelectContent>

@@ -9,8 +9,12 @@ export const validatePhone = (phone) => {
 };
 
 export const validateRequired = (value) => {
-  return value.trim() !== '';
+  if (typeof value === 'string') {
+    return value.trim() !== '';
+  }
+  return value !== undefined && value !== null;
 };
+
 
 export const validateMinLength = (value, min) => {
   return value.length >= min;
@@ -21,20 +25,34 @@ export const validateMaxLength = (value, max) => {
 };
 
 export const validateNumberRange = (value, min, max) => {
+  if (typeof value === 'string' && value.trim() === '') {
+    return false;
+  }
   const num = parseFloat(value);
   return !isNaN(num) && num >= min && num <= max;
 };
+
 
 export const validateForm = (fields, rules) => {
   const errors = {};
   
   Object.keys(rules).forEach((field) => {
     const value = fields[field] || '';
-    rules[field].forEach((rule) => {
+    let fieldValid = true;
+    
+    // Check all validation rules for this field
+    for (const rule of rules[field]) {
       if (!rule.validator(value, rule.params)) {
         errors[field] = rule.message;
+        fieldValid = false;
+        break; // Stop at first error for this field
       }
-    });
+    }
+    
+    // If field is valid, remove any previous error
+    if (fieldValid && errors[field]) {
+      delete errors[field];
+    }
   });
 
   return {
