@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MapPin, BedDouble, Bath, Square } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Square, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PropertyModal from '../components/PropertyModal';
 import { Select, SelectItem } from '../components/ui/Select';
@@ -61,26 +61,55 @@ const Properties = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-bold mb-4">Filter Properties</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Location</label>
-            <Select
-              value={locationFilter || ''}
-              onValueChange={(value) => {
-                queryParams.set('location', value);
-                navigate(`/properties?${queryParams.toString()}`);
-              }}
-              label="Select Location"
-            >
-              <SelectItem value="">All Locations</SelectItem>
-              {locations.map(loc => (
-                <SelectItem key={loc} value={loc}>
-                  {loc}
-                </SelectItem>
-              ))}
-            </Select>
+      {/* Enhanced Filter Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg mb-12 overflow-hidden">
+        <div className="px-8 py-6">
+          <div className="flex items-center mb-6">
+            <Search className="w-6 h-6 text-blue-600 mr-3" />
+            <h2 className="text-2xl font-semibold text-gray-800">Find Your Perfect Property</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Location</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <Select
+                  value={locationFilter || ''}
+                  onValueChange={(value) => {
+                    queryParams.set('location', value);
+                    navigate(`/properties?${queryParams.toString()}`);
+                  }}
+                >
+                  <SelectItem value="">All Locations</SelectItem>
+                  {locations.map(loc => (
+                    <SelectItem 
+                      key={loc} 
+                      value={loc}
+                      className="hover:bg-blue-50 transition-colors"
+                    >
+                      {loc}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="bg-white/50 px-8 py-4 border-t border-blue-100">
+          <div className="flex items-center space-x-8 text-sm text-gray-600">
+            <span className="flex items-center">
+              <BedDouble className="w-4 h-4 mr-2 text-blue-500" />
+              {filteredProperties.length} Properties Available
+            </span>
+            <span className="flex items-center">
+              <MapPin className="w-4 h-4 mr-2 text-blue-500" />
+              {locations.length} Locations
+            </span>
           </div>
         </div>
       </div>

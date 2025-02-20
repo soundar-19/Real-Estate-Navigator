@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Home as HomeIcon, IndianRupee } from 'lucide-react';
 import Slider from '../ui/Slider';
-import { Select, SelectContent, SelectItem } from '../ui/Select';
+import { Select, SelectItem } from '../ui/Select';
 import { fetchLocations } from '../../lib/api';
-
 
 const HeroSection = ({ onSearch }) => {
   const [location, setLocation] = useState('');
@@ -26,7 +25,6 @@ const HeroSection = ({ onSearch }) => {
     
     getLocations();
   }, []);
-
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -55,21 +53,20 @@ const HeroSection = ({ onSearch }) => {
                   <MapPin className="w-4 h-4 mr-2" />
                   Location
                 </label>
-                <Select value={location} onValueChange={setLocation}>
-                  <SelectContent>
-                  {loadingLocations ? (
-                    <SelectItem value="" disabled>Loading locations...</SelectItem>
-                  ) : locations.length > 0 ? (
-                    locations.map((loc) => (
-                      <SelectItem key={loc} value={loc.toLowerCase()}>
-                        {loc}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="" disabled>No locations available</SelectItem>
-                  )}
-
-                  </SelectContent>
+                <Select
+                  value={location}
+                  onValueChange={setLocation}
+                >
+                  <SelectItem value="">All Locations</SelectItem>
+                  {locations.map(loc => (
+                    <SelectItem 
+                      key={loc} 
+                      value={loc.toLowerCase()}
+                      className="hover:bg-blue-50 transition-colors"
+                    >
+                      {loc}
+                    </SelectItem>
+                  ))}
                 </Select>
               </div>
 
@@ -78,14 +75,15 @@ const HeroSection = ({ onSearch }) => {
                   <HomeIcon className="w4 h-4 mr-2" />
                   Property Type
                 </label>
-                <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectContent>
-                    <SelectItem value="house">House</SelectItem>
-                    <SelectItem value="apartment">Apartment</SelectItem>
-                    <SelectItem value="villa">Villa</SelectItem>
-                    <SelectItem value="condo">Condo</SelectItem>
-                    <SelectItem value="townhouse">Townhouse</SelectItem>
-                  </SelectContent>
+                <Select
+                  value={propertyType}
+                  onValueChange={setPropertyType}
+                >
+                  <SelectItem value="house">House</SelectItem>
+                  <SelectItem value="apartment">Apartment</SelectItem>
+                  <SelectItem value="villa">Villa</SelectItem>
+                  <SelectItem value="condo">Condo</SelectItem>
+                  <SelectItem value="townhouse">Townhouse</SelectItem>
                 </Select>
               </div>
 
